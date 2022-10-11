@@ -55,11 +55,17 @@ def createModel() -> Sequential:
     
 def trainModel(model: Sequential) -> None:
     model.compile(loss='categorical_crossentropy', optimizer=Adam(
-        lr=0.0001, decay=1e-6), metrics=['accuracy'])
-    model.fit_generator(
+        learning_rate=0.0001, decay=1e-6), metrics=['accuracy'])
+    model.fit(
         train_generator,
         steps_per_epoch=num_train // batch_size,
         epochs=num_epoch,
         validation_data=validation_generator,
         validation_steps=num_val // batch_size)
-    model.save_weights('model.h5')
+    model_json = model.to_json()
+    with open("model.json", "w") as json_file:
+        json_file.write(model_json)
+        model.save_weights("model.h5")
+    print("Saved model to disk")
+
+trainModel(createModel())
